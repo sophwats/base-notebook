@@ -63,6 +63,8 @@ RUN mkdir /notebooks && chown $NB_UID:root /notebooks && chmod 1777 /notebooks
 
 EXPOSE 8888
 
+ADD Untitled.ipynb /notebooks/Untitled.ipynb
+
 RUN mkdir -p -m 700 /home/$NB_USER/.jupyter/ && \
     echo "c.NotebookApp.ip = '*'" >> /home/$NB_USER/.jupyter/jupyter_notebook_config.py && \
     echo "c.NotebookApp.open_browser = False" >> /home/$NB_USER/.jupyter/jupyter_notebook_config.py && \
