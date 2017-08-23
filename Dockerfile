@@ -4,6 +4,9 @@ FROM radanalyticsio/openshift-spark
 
 USER root
 
+ENV NB_USER=nbuser
+ENV NB_UID=1011
+
 ## taken/adapted from jupyter dockerfiles
 
 # Not essential, but wise to set the lang
@@ -63,7 +66,16 @@ RUN mkdir /notebooks && chown $NB_UID:root /notebooks && chmod 1777 /notebooks
 
 EXPOSE 8888
 
+USER $NB_UID
+
 ADD Untitled.ipynb /notebooks/Untitled.ipynb
+
+USER root
+
+RUN chown -R $NB_USER:root /home/$NB_USER \
+    && find /home/$NB_USER -type d -exec chmod g+rwx,o+rx {} \; \
+    && find /home/$NB_USER -type f -exec chmod g+rw {} \; \
+    && chmod -f g+rw /notebooks/*
 
 RUN mkdir -p -m 700 /home/$NB_USER/.jupyter/ && \
     echo "c.NotebookApp.ip = '*'" >> /home/$NB_USER/.jupyter/jupyter_notebook_config.py && \
@@ -86,6 +98,7 @@ RUN chmod +x /tini /start.sh
 
 ENV HOME /home/$NB_USER
 USER $NB_UID
+
 WORKDIR /notebooks
 
 ENTRYPOINT ["/tini", "--"]
