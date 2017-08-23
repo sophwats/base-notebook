@@ -68,13 +68,18 @@ EXPOSE 8888
 
 USER $NB_UID
 
+ADD ViewsJan.txt /data/ViewsJan.txt
+
 ADD Untitled.ipynb /notebooks/Untitled.ipynb
+
 
 USER root
 
-RUN chown -R $NB_USER:root /home/$NB_USER \
+RUN chown -R $NB_USER:root /home/$NB_USER /data \
     && find /home/$NB_USER -type d -exec chmod g+rwx,o+rx {} \; \
     && find /home/$NB_USER -type f -exec chmod g+rw {} \; \
+    && find /data -type d -exec chmod g+rwx,o+rx {} \; \
+    && find /data -type f -exec chmod g+rw {} \; \
     && chmod -f g+rw /notebooks/*
 
 RUN mkdir -p -m 700 /home/$NB_USER/.jupyter/ && \
